@@ -38,10 +38,10 @@ export default function Countdown({ minutes, onExpire }) {
   const isUrgent = secondsLeft < 30;
 
   return (
-    <div className={`font-mono text-lg font-bold px-4 py-1.5 rounded-lg transition-colors ${
+    <div className={`font-mono text-lg font-bold px-4 py-1.5 rounded-lg border transition-colors ${
       isUrgent
-        ? 'bg-red-500/10 text-red-400 border border-red-500/20'
-        : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+        ? 'bg-red-500/10 text-red-400 border-red-500/20'
+        : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
     }`}>
       {String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
     </div>

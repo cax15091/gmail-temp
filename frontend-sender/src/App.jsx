@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
-import { SendHorizontal } from 'lucide-react';
+import { MessageSquareText } from 'lucide-react';
 import SenderForm from './components/SenderForm';
 
 const API_URL = 'https://gmail-temp-production.up.railway.app/api';
@@ -10,8 +10,9 @@ const SOCKET_URL = 'https://gmail-temp-production.up.railway.app';
 function App() {
   const [socket, setSocket] = useState(null);
   const [activeEmail, setActiveEmail] = useState(null);
+  const [messages, setMessages] = useState([]);
 
-  // Fetch the latest active email on load
+  // 1. Fetch the latest active email on load
   useEffect(() => {
     const fetchLatest = async () => {
       try {
@@ -24,54 +25,84 @@ function App() {
     fetchLatest();
   }, []);
 
-  // Listen for new active emails being generated in real-time
+  // 2. Setup Socket.IO connection and listen for new active emails and new messages
   useEffect(() => {
-    const newSocket = io(SOCKET_URL);
+    const newSocket = io(SOCKET_URL, { transports: ['websocket', 'polling'] });
     setSocket(newSocket);
 
     newSocket.on('new_active_email', (emailData) => {
       setActiveEmail(emailData);
+      setMessages([]); // Clear chat for new email session
+    });
+
+    newSocket.on('new_message', (msg) => {
+      setMessages(prev => {
+        // Prevent duplicate appends
+        if (prev.some(m => m._id === msg._id)) return prev;
+        return [...prev, msg];
+      });
     });
 
     return () => newSocket.close();
   }, []);
 
+  // 3. Join Socket.IO room and fetch existing messages when active email changes
+  useEffect(() => {
+    if (socket && activeEmail) {
+      // Join room to receive real-time messages
+      socket.emit('join_email', activeEmail.email);
+
+      // Fetch message history
+      axios.get(`${API_URL}/emails/${activeEmail.email}`)
+        .then(res => {
+          // Message history from backend is usually sorted descending, let's reverse it to chronological order for chat
+          const sortedMsgs = (res.data.messages || []).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+          setMessages(sortedMsgs);
+        })
+        .catch(() => {
+          setMessages([]);
+        });
+    } else {
+      setMessages([]);
+    }
+  }, [socket, activeEmail]);
+
   return (
-    <div className="min-h-screen bg-slate-950 p-4 md:p-8 font-sans flex items-center justify-center">
-      <div className="max-w-2xl w-full space-y-8 animate-fade-in">
+    <div className="min-h-screen bg-[#0b141a] p-3 md:p-8 font-sans flex items-center justify-center text-[#e9edef]">
+      <div className="max-w-4xl w-full space-y-6 md:space-y-8 animate-fade-in">
         
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center justify-center p-4 bg-emerald-500/10 rounded-full mb-2">
-            <SendHorizontal className="w-10 h-10 text-emerald-400" />
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center justify-center p-3 bg-emerald-500/10 rounded-full mb-1">
+            <MessageSquareText className="w-8 h-8 text-emerald-400" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 text-transparent bg-clip-text">
-            Sender Panel
+            Chat Panel
           </h1>
-          <p className="text-slate-400">
-            Send messages directly to the active temporary email.
+          <p className="text-[#8696a0] text-xs md:text-sm">
+            Panel de chat en tiempo real estilo WhatsApp. Conversa directamente con el receptor del correo temporal.
           </p>
         </div>
 
         {/* Status indicator */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between">
-          <div className="flex items-center space-x-3 mb-4 sm:mb-0">
-            <div className="relative flex h-3 w-3">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${activeEmail ? 'bg-emerald-400' : 'bg-red-400'}`}></span>
-              <span className={`relative inline-flex rounded-full h-3 w-3 ${activeEmail ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+        <div className="bg-[#111b21] border border-[#222e35] rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center space-x-3">
+            <div className="relative flex h-3 w-3 shrink-0">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${activeEmail ? 'bg-[#00a884]' : 'bg-red-400'}`}></span>
+              <span className={`relative inline-flex rounded-full h-3 w-3 ${activeEmail ? 'bg-[#00a884]' : 'bg-red-500'}`}></span>
             </div>
-            <span className="font-medium text-slate-300">
-              {activeEmail ? 'Active Connection' : 'Waiting for Receiver'}
+            <span className="font-semibold text-slate-200 text-sm">
+              {activeEmail ? 'Conexión Activa' : 'Esperando Generador'}
             </span>
           </div>
-          <div className="text-sm px-4 py-2 bg-slate-800 rounded-lg text-slate-300 font-mono">
-            Target: {activeEmail ? activeEmail.email : 'None'}
+          <div className="text-xs md:text-sm px-4 py-2 bg-[#2a3942] rounded-lg text-slate-300 font-mono break-all max-w-full">
+            Destinatario: {activeEmail ? activeEmail.email : 'Ninguno'}
           </div>
         </div>
 
-        {/* Sender Form */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm">
-          <SenderForm activeEmail={activeEmail} />
+        {/* Sender Form (Chat Interface) */}
+        <div className="bg-[#111b21] border border-[#222e35] rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm">
+          <SenderForm activeEmail={activeEmail} messages={messages} setMessages={setMessages} />
         </div>
       </div>
     </div>
