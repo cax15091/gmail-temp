@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
-import { Mail, Clock, RefreshCw } from 'lucide-react';
+import { Mail, Clock, RefreshCw, Bell, BellOff } from 'lucide-react';
 import EmailGenerator from './components/EmailGenerator';
 import Countdown from './components/Countdown';
 import MessageList from './components/MessageList';
@@ -9,37 +9,82 @@ import MessageList from './components/MessageList';
 const API_URL = 'https://gmail-temp-production.up.railway.app/api';
 const SOCKET_URL = 'https://gmail-temp-production.up.railway.app';
 
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
 function App() {
   const [socket, setSocket] = useState(null);
   const [currentEmail, setCurrentEmail] = useState(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [notifAllowed, setNotifAllowed] = useState(Notification.permission === 'granted');
+  const [newMsgCount, setNewMsgCount] = useState(0);
 
+  // ─── Restore email from localStorage on mount ──────────────────────────────
   useEffect(() => {
-    const newSocket = io(SOCKET_URL);
+    const saved = localStorage.getItem('tempmail_email');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setCurrentEmail(parsed);
+      // Fetch existing messages from backend for the saved email
+      axios.get(`${API_URL}/emails/${parsed.email}`)
+        .then(res => setMessages(res.data.messages || []))
+        .catch(() => {});
+    }
+  }, []);
+
+  // ─── Socket.IO setup ───────────────────────────────────────────────────────
+  useEffect(() => {
+    const newSocket = io(SOCKET_URL, { transports: ['websocket', 'polling'] });
     setSocket(newSocket);
 
     newSocket.on('new_message', (msg) => {
-      setMessages((prev) => [msg, ...prev]);
+      setMessages(prev => [msg, ...prev]);
+      setNewMsgCount(n => n + 1);
+
+      // Browser / PWA push notification
+      if (Notification.permission === 'granted') {
+        new Notification('📬 TempMail Pro — Nuevo mensaje', {
+          body: `De: ${msg.sender}\nAsunto: ${msg.subject}`,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: 'new-message',
+          renotify: true,
+        });
+      }
     });
 
     return () => newSocket.close();
   }, []);
 
+  // ─── Join socket room when email changes ───────────────────────────────────
   useEffect(() => {
     if (socket && currentEmail) {
       socket.emit('join_email', currentEmail.email);
     }
   }, [socket, currentEmail]);
 
+  // ─── Generate new email ────────────────────────────────────────────────────
   const generateEmail = async () => {
     setLoading(true);
     try {
+      // Request notification permission on first email generation
+      if (Notification.permission === 'default') {
+        const perm = await Notification.requestPermission();
+        setNotifAllowed(perm === 'granted');
+      }
       const response = await axios.post(`${API_URL}/emails`);
-      setCurrentEmail(response.data);
+      const email = response.data;
+      setCurrentEmail(email);
       setMessages([]);
-      setRefreshKey(prev => prev + 1); // Reset countdown
+      setNewMsgCount(0);
+      localStorage.setItem('tempmail_email', JSON.stringify(email));
+      setRefreshKey(prev => prev + 1);
     } catch (error) {
       console.error('Failed to generate email', error);
     } finally {
@@ -47,21 +92,29 @@ function App() {
     }
   };
 
-  const fetchMessages = async () => {
-    if (!currentEmail) return;
+  // ─── Fetch messages (auto-refresh) ─────────────────────────────────────────
+  const fetchMessages = useCallback(async () => {
+    const saved = localStorage.getItem('tempmail_email');
+    if (!saved) return;
+    const email = JSON.parse(saved);
     try {
-      const response = await axios.get(`${API_URL}/emails/${currentEmail.email}`);
-      setMessages(response.data.messages);
-      setRefreshKey(prev => prev + 1); // Reset countdown
+      const response = await axios.get(`${API_URL}/emails/${email.email}`);
+      setMessages(response.data.messages || []);
+      setNewMsgCount(0);
     } catch (error) {
       console.error('Failed to fetch messages', error);
     }
+    setRefreshKey(prev => prev + 1); // reset countdown
+  }, []);
+
+  const handleRefreshNow = () => {
+    fetchMessages();
   };
 
   return (
     <div className="min-h-screen bg-slate-950 p-4 md:p-8 font-sans">
       <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-        
+
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="inline-flex items-center justify-center p-3 bg-indigo-500/10 rounded-full mb-2">
@@ -70,29 +123,43 @@ function App() {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent bg-clip-text">
             TempMail Pro
           </h1>
-          <p className="text-slate-400 max-w-lg mx-auto">
-            Your premium, real-time disposable email service. Protect your privacy and avoid spam.
+          <p className="text-slate-400 max-w-lg mx-auto text-sm md:text-base">
+            Tu servicio de correo temporal premium en tiempo real. Protege tu privacidad.
           </p>
+
+          {/* Notification toggle */}
+          <button
+            onClick={async () => {
+              const perm = await Notification.requestPermission();
+              setNotifAllowed(perm === 'granted');
+            }}
+            className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border border-slate-700 text-slate-400 hover:text-indigo-400 hover:border-indigo-500/50 transition-all"
+          >
+            {notifAllowed
+              ? <><Bell className="w-3 h-3 text-indigo-400" /> Notificaciones activas</>
+              : <><BellOff className="w-3 h-3" /> Activar notificaciones</>
+            }
+          </button>
         </div>
 
         {/* Main Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
-          <EmailGenerator 
-            currentEmail={currentEmail} 
-            onGenerate={generateEmail} 
-            loading={loading} 
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-2xl">
+          <EmailGenerator
+            currentEmail={currentEmail}
+            onGenerate={generateEmail}
+            loading={loading}
           />
 
           {currentEmail && (
-            <div className="mt-6 pt-6 border-t border-slate-800 flex items-center justify-between">
+            <div className="mt-6 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center space-x-2 text-slate-400">
                 <Clock className="w-4 h-4" />
-                <span className="text-sm">Auto-refreshing in:</span>
+                <span className="text-sm">Actualización automática en:</span>
               </div>
-              <Countdown 
-                key={refreshKey} 
-                minutes={6} 
-                onExpire={fetchMessages} 
+              <Countdown
+                key={refreshKey}
+                minutes={6}
+                onExpire={fetchMessages}
               />
             </div>
           )}
@@ -102,16 +169,23 @@ function App() {
         {currentEmail && (
           <div className="space-y-4 animate-slide-up">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold text-slate-200">Inbox</h2>
-              <button 
-                onClick={fetchMessages}
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl md:text-2xl font-semibold text-slate-200">Bandeja de entrada</h2>
+                {newMsgCount > 0 && (
+                  <span className="px-2 py-0.5 text-xs bg-indigo-500 text-white rounded-full animate-pulse">
+                    +{newMsgCount} nuevo{newMsgCount > 1 ? 's' : ''}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={handleRefreshNow}
                 className="flex items-center space-x-2 text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                <span>Refresh Now</span>
+                <span className="hidden sm:inline">Actualizar ahora</span>
               </button>
             </div>
-            
+
             <MessageList messages={messages} />
           </div>
         )}
