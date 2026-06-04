@@ -47,15 +47,29 @@ function App() {
       setMessages(prev => [msg, ...prev]);
       setNewMsgCount(n => n + 1);
 
-      // Browser / PWA push notification
+      // Use SW-based notification so it works in both browser AND installed PWA mode
       if (Notification.permission === 'granted') {
-        new Notification('📬 TempMail Pro — Nuevo mensaje', {
+        const notifPayload = {
           body: `De: ${msg.sender}\nAsunto: ${msg.subject}`,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
           tag: 'new-message',
           renotify: true,
-        });
+          vibrate: [200, 100, 200],
+        };
+
+        // Installed PWA / standalone: must go through Service Worker
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.ready.then(reg => {
+            reg.showNotification('📬 TempMail Pro — Nuevo mensaje', notifPayload);
+          }).catch(() => {
+            // Fallback to regular notification if SW fails
+            new Notification('📬 TempMail Pro — Nuevo mensaje', notifPayload);
+          });
+        } else {
+          // Browser tab (not installed): regular Notification works fine
+          new Notification('📬 TempMail Pro — Nuevo mensaje', notifPayload);
+        }
       }
     });
 
