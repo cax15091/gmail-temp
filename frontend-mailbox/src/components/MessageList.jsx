@@ -50,7 +50,7 @@ function AttachmentCard({ file, isOutgoing }) {
     <div className={clsx(
       "border rounded-xl overflow-hidden text-xs max-w-xs transition-all",
       isOutgoing 
-        ? "border-blue-400/30 bg-blue-500/20 hover:bg-blue-500/40" 
+        ? "border-blue-400/30 bg-blue-500/20 hover:bg-blue-600/40" 
         : "border-slate-600/60 bg-slate-700/40 hover:bg-slate-700/70"
     )}>
       {isImage && (
@@ -66,7 +66,7 @@ function AttachmentCard({ file, isOutgoing }) {
           <p className="text-slate-400 text-[10px]">{formatBytes(file.size)}</p>
         </div>
         <button onClick={handleDownload} title="Descargar"
-          className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 transition-colors shrink-0">
+          className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-600/40 transition-colors shrink-0">
           <Download className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -211,7 +211,7 @@ export default function MessageList({ messages, currentEmail }) {
 
                 {/* BOTÓN EXPLÍCITO DE RESPONDER DENTRO DEL ITEM */}
                 <div className="w-full flex justify-end mt-1">
-                  <div className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md">
+                  <div className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md">
                     <MessageCircle className="w-3.5 h-3.5" />
                     Responder
                   </div>
@@ -261,7 +261,7 @@ export default function MessageList({ messages, currentEmail }) {
                     <div className={clsx(
                       "max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 text-sm shadow-xl relative break-words flex flex-col gap-1.5",
                       isOutgoing 
-                        ? "bg-blue-600 text-white rounded-br-sm border border-blue-500" 
+                        ? "bg-blue-700 text-white rounded-br-sm border border-blue-500" 
                         : "bg-slate-800 text-slate-100 rounded-bl-sm border border-slate-700"
                     )}>
                       {!isOutgoing && (
@@ -323,7 +323,7 @@ export default function MessageList({ messages, currentEmail }) {
                   "p-3 rounded-xl text-white transition-all flex items-center justify-center shrink-0 shadow-lg",
                   !replyText.trim() || loadingReply
                     ? "bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-700"
-                    : "bg-blue-600 hover:bg-blue-500 border border-blue-400 hover:scale-105 active:scale-95"
+                    : "bg-blue-700 hover:bg-blue-600 border border-blue-400 hover:scale-105 active:scale-95"
                 )}
               >
                 {loadingReply ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}

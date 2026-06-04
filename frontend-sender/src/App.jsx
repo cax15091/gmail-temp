@@ -68,15 +68,15 @@ function App() {
   }, [socket, activeEmail]);
 
   return (
-    <div className="min-h-screen bg-[#0b141a] p-3 md:p-8 font-sans flex items-center justify-center text-[#e9edef]">
+    <div className="min-h-screen bg-[slate-950] p-3 md:p-8 font-sans flex items-center justify-center text-[#e9edef]">
       <div className="max-w-4xl w-full space-y-6 md:space-y-8 animate-fade-in">
         
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center p-3 bg-emerald-500/10 rounded-full mb-1">
-            <MessageSquareText className="w-8 h-8 text-emerald-400" />
+          <div className="inline-flex items-center justify-center p-3 bg-blue-700/10 rounded-full mb-1">
+            <MessageSquareText className="w-8 h-8 text-blue-500" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 text-transparent bg-clip-text">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-500 to-blue-400 text-transparent bg-clip-text">
             Chat Panel
           </h1>
           <p className="text-[#8696a0] text-xs md:text-sm">
@@ -85,11 +85,11 @@ function App() {
         </div>
 
         {/* Status indicator */}
-        <div className="bg-[#111b21] border border-[#222e35] rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="bg-[slate-900] border border-[slate-800] rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-3">
             <div className="relative flex h-3 w-3 shrink-0">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${activeEmail ? 'bg-[#00a884]' : 'bg-red-400'}`}></span>
-              <span className={`relative inline-flex rounded-full h-3 w-3 ${activeEmail ? 'bg-[#00a884]' : 'bg-red-500'}`}></span>
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${activeEmail ? 'bg-[blue-600]' : 'bg-red-400'}`}></span>
+              <span className={`relative inline-flex rounded-full h-3 w-3 ${activeEmail ? 'bg-[blue-600]' : 'bg-red-500'}`}></span>
             </div>
             <span className="font-semibold text-slate-200 text-sm">
               {activeEmail ? 'Conexión Activa' : 'Esperando Generador'}
@@ -101,7 +101,7 @@ function App() {
         </div>
 
         {/* Sender Form (Chat Interface) */}
-        <div className="bg-[#111b21] border border-[#222e35] rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm">
+        <div className="bg-[slate-900] border border-[slate-800] rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm">
           <SenderForm activeEmail={activeEmail} messages={messages} setMessages={setMessages} />
         </div>
       </div>

@@ -58,7 +58,7 @@ function AttachmentCard({ file, isOutgoing }) {
     <div className={clsx(
       "border rounded-xl overflow-hidden text-xs max-w-xs transition-all",
       isOutgoing 
-        ? "border-blue-400/30 bg-blue-500/20 hover:bg-blue-500/40" 
+        ? "border-blue-400/30 bg-blue-500/20 hover:bg-blue-600/40" 
         : "border-slate-600/60 bg-slate-700/40 hover:bg-slate-700/70"
     )}>
       {isImage && (
@@ -74,7 +74,7 @@ function AttachmentCard({ file, isOutgoing }) {
           <p className="text-slate-400 text-[10px]">{formatBytes(file.size)}</p>
         </div>
         <button onClick={handleDownload} title="Descargar"
-          className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 transition-colors shrink-0">
+          className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-600/40 transition-colors shrink-0">
           <Download className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -232,7 +232,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
             <button
               type="submit"
               disabled={!senderName.trim() || !subject.trim()}
-              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:border-slate-700 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-95 disabled:active:scale-100 border border-blue-400 mt-2"
+              className="w-full bg-blue-700 hover:bg-blue-600 disabled:bg-slate-800 disabled:text-slate-500 disabled:border-slate-700 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-95 disabled:active:scale-100 border border-blue-400 mt-2"
             >
               Comenzar Conversación
             </button>
@@ -284,7 +284,6 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
             <span className="hidden sm:inline">Perfil</span>
             {showConfig ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </button>
-          <MoreVertical className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
         </div>
       </div>
 
@@ -358,7 +357,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
               <div className={clsx(
                 "max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm shadow-xl relative break-words flex flex-col gap-1.5",
                 isOutgoing 
-                  ? "bg-blue-600 text-white rounded-br-sm border border-blue-500" 
+                  ? "bg-blue-700 text-white rounded-br-sm border border-blue-500" 
                   : "bg-slate-800 text-slate-100 rounded-bl-sm border border-slate-700"
               )}>
                 {/* Bubble sender label */}
@@ -475,7 +474,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
             "p-3.5 rounded-xl text-white transition-all flex items-center justify-center shrink-0 shadow-lg",
             isDisabled || !messageText.trim()
               ? "bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-700"
-              : "bg-blue-600 hover:bg-blue-500 hover:scale-105 active:scale-95 border border-blue-400"
+              : "bg-blue-700 hover:bg-blue-600 hover:scale-105 active:scale-95 border border-blue-400"
           )}
         >
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
