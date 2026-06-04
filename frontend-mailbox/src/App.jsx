@@ -6,8 +6,8 @@ import EmailGenerator from './components/EmailGenerator';
 import Countdown from './components/Countdown';
 import MessageList from './components/MessageList';
 
-const API_URL = 'https://wise-jars-shine.loca.lt/api';
-const SOCKET_URL = 'https://wise-jars-shine.loca.lt';
+const API_URL = 'https://gmail-temp-production.up.railway.app/api';
+const SOCKET_URL = 'https://gmail-temp-production.up.railway.app';
 
 function App() {
   const [socket, setSocket] = useState(null);

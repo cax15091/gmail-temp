@@ -4,8 +4,8 @@ import axios from 'axios';
 import { SendHorizontal } from 'lucide-react';
 import SenderForm from './components/SenderForm';
 
-const API_URL = 'https://wise-jars-shine.loca.lt/api';
-const SOCKET_URL = 'https://wise-jars-shine.loca.lt';
+const API_URL = 'https://gmail-temp-production.up.railway.app/api';
+const SOCKET_URL = 'https://gmail-temp-production.up.railway.app';
 
 function App() {
   const [socket, setSocket] = useState(null);

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Send, Loader2, CheckCircle } from 'lucide-react';
 import clsx from 'clsx';
 
-const API_URL = 'https://wise-jars-shine.loca.lt/api';
+const API_URL = 'https://gmail-temp-production.up.railway.app/api';
 
 export default function SenderForm({ activeEmail }) {
   const [formData, setFormData] = useState({
