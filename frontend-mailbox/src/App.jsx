@@ -200,7 +200,7 @@ function App() {
               </button>
             </div>
 
-            <MessageList messages={messages} />
+            <MessageList messages={messages} currentEmail={currentEmail} />
           </div>
         )}
       </div>
