@@ -50,8 +50,8 @@ function AttachmentCard({ file, isOutgoing }) {
     <div className={clsx(
       "border rounded-xl overflow-hidden text-xs max-w-xs transition-all",
       isOutgoing 
-        ? "border-emerald-600/30 bg-[#004d3e]/50 hover:bg-[#004d3e]/80" 
-        : "border-slate-700/60 bg-slate-800/40 hover:bg-slate-800/70"
+        ? "border-indigo-400/30 bg-indigo-500/20 hover:bg-indigo-500/40" 
+        : "border-slate-600/60 bg-slate-700/40 hover:bg-slate-700/70"
     )}>
       {isImage && (
         <img src={file.data} alt={file.name}
@@ -60,13 +60,13 @@ function AttachmentCard({ file, isOutgoing }) {
         />
       )}
       <div className="flex items-center gap-2 p-2">
-        <FileIcon type={file.type} className="w-4 h-4 text-emerald-400 shrink-0" />
+        <FileIcon type={file.type} className="w-4 h-4 text-indigo-300 shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-slate-200 truncate font-medium">{file.name}</p>
+          <p className="text-slate-100 truncate font-medium">{file.name}</p>
           <p className="text-slate-400 text-[10px]">{formatBytes(file.size)}</p>
         </div>
         <button onClick={handleDownload} title="Descargar"
-          className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors shrink-0">
+          className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 transition-colors shrink-0">
           <Download className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -83,23 +83,19 @@ export default function MessageList({ messages, currentEmail }) {
   const [searchQuery, setSearchQuery] = useState('');
   const chatEndRef = useRef(null);
 
-  // Automatically scroll chat to bottom when message list or selected message changes
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, selectedMessage]);
 
-  // Filter messages based on search query (by sender name or subject)
   const filteredAllMessages = messages.filter(msg => 
     msg.sender?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     msg.subject?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // In WhatsApp, the left sidebar list displays the original received emails (incoming threads)
   const originalMessages = filteredAllMessages.filter(msg => !msg.subject?.startsWith('Re: '));
 
-  // Determine the thread messages for the currently selected original message
   const threadMessages = selectedMessage
     ? messages
         .filter(m => m._id === selectedMessage._id || m.subject === `Re: ${selectedMessage.subject}`)
@@ -111,7 +107,6 @@ export default function MessageList({ messages, currentEmail }) {
     if (!replyText.trim() || !currentEmail || !selectedMessage) return;
     setLoadingReply(true);
 
-    // Quote the original or last message
     const quotedBody =
       replyText +
       `\n\n— El ${new Date(selectedMessage.createdAt).toLocaleString('es-MX')}, ${selectedMessage.sender} escribió:\n` +
@@ -135,12 +130,12 @@ export default function MessageList({ messages, currentEmail }) {
 
   if (!messages || messages.length === 0) {
     return (
-      <div className="bg-[#111b21] border border-[#222e35] rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-4 min-h-[500px]">
-        <div className="p-4 bg-[#202c33] rounded-full">
-          <Inbox className="w-10 h-10 text-emerald-500" />
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-4 min-h-[400px]">
+        <div className="p-4 bg-slate-800 rounded-full shadow-inner shadow-indigo-500/10">
+          <Inbox className="w-10 h-10 text-indigo-400" />
         </div>
         <div className="space-y-1">
-          <h3 className="text-xl font-medium text-slate-200">Bandeja de entrada vacía</h3>
+          <h3 className="text-xl font-medium text-slate-100">Bandeja de entrada vacía</h3>
           <p className="text-slate-400 text-sm">Esperando mensajes entrantes en tiempo real...</p>
         </div>
       </div>
@@ -148,47 +143,41 @@ export default function MessageList({ messages, currentEmail }) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-2xl overflow-hidden border border-[#222e35] bg-[#0b141a] h-[650px]">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 h-[calc(100dvh-280px)] min-h-[500px] shadow-2xl">
       
       {/* ── 1. Left Sidebar (Chats list) ── */}
       <div className={clsx(
-        "md:col-span-1 bg-[#111b21] border-r border-[#222e35] flex flex-col h-full",
+        "md:col-span-1 bg-slate-900 border-r border-slate-800 flex flex-col h-full",
         selectedMessage ? "hidden md:flex" : "flex"
       )}>
-        {/* Sidebar Header */}
-        <div className="p-3 bg-[#202c33] flex items-center justify-between">
+        <div className="p-3 bg-slate-800/80 flex items-center justify-between backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-lg">
               M
             </div>
-            <span className="font-semibold text-slate-200 text-sm">Mensajes</span>
+            <span className="font-semibold text-slate-100 text-sm">Mensajes</span>
           </div>
-          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#00a884] text-white">
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
             {originalMessages.length} hilos
           </span>
         </div>
 
-        {/* Sidebar Search */}
-        <div className="p-2 bg-[#111b21] border-b border-[#222e35]">
-          <div className="relative bg-[#202c33] rounded-lg flex items-center px-3 py-1.5 gap-2">
-            <Search className="w-4 h-4 text-slate-400 shrink-0" />
+        <div className="p-2 bg-slate-900 border-b border-slate-800">
+          <div className="relative bg-slate-950 rounded-lg flex items-center px-3 py-1.5 gap-2 border border-slate-800 focus-within:border-indigo-500/50 transition-colors">
+            <Search className="w-4 h-4 text-slate-500 shrink-0" />
             <input
               type="text"
-              placeholder="Buscar remitente o asunto..."
+              placeholder="Buscar..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="bg-transparent border-none text-slate-200 text-xs w-full focus:outline-none placeholder-slate-500"
+              className="bg-transparent border-none text-slate-200 text-xs w-full focus:outline-none placeholder-slate-600"
             />
           </div>
         </div>
 
-        {/* Chat Threads list */}
-        <div className="overflow-y-auto flex-1 divide-y divide-[#222e35]">
+        <div className="overflow-y-auto flex-1 divide-y divide-slate-800/50">
           {originalMessages.map((msg) => {
             const isSelected = selectedMessage?._id === msg._id;
-            const parsed = parseMessage(msg.message || '');
-            
-            // Find replies count for this thread
             const threadReplies = messages.filter(m => m.subject === `Re: ${msg.subject}`);
             const lastMsg = threadReplies.length > 0 ? threadReplies[threadReplies.length - 1] : msg;
 
@@ -196,23 +185,21 @@ export default function MessageList({ messages, currentEmail }) {
               <button key={msg._id} onClick={() => setSelectedMessage(msg)}
                 className={clsx(
                   "w-full text-left p-3 flex gap-3 transition-colors",
-                  isSelected 
-                    ? "bg-[#2a3942]" 
-                    : "hover:bg-[#202c33]/50 bg-transparent"
+                  isSelected ? "bg-slate-800/80 border-l-2 border-indigo-500" : "hover:bg-slate-800/40 bg-transparent border-l-2 border-transparent"
                 )}>
-                <div className="w-11 h-11 rounded-full bg-slate-700/60 flex items-center justify-center text-slate-200 font-bold shrink-0 text-base">
+                <div className="w-11 h-11 rounded-full bg-slate-800 flex items-center justify-center text-indigo-300 font-bold shrink-0 text-base shadow-inner border border-slate-700">
                   {msg.sender?.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-0.5">
-                    <span className="font-semibold text-slate-200 text-sm truncate">{msg.sender}</span>
-                    <span className="text-[10px] text-slate-400 shrink-0">
+                    <span className="font-semibold text-slate-100 text-sm truncate">{msg.sender}</span>
+                    <span className="text-[10px] text-indigo-300/70 shrink-0">
                       {formatDistanceToNow(new Date(lastMsg.createdAt), { addSuffix: true, locale: es })}
                     </span>
                   </div>
-                  <p className="text-xs font-medium text-emerald-400 truncate mb-0.5">{msg.subject}</p>
-                  <p className="text-xs text-slate-400 truncate">
-                    {threadReplies.length > 0 && <span className="text-emerald-500 font-semibold">Tú: </span>}
+                  <p className="text-xs font-medium text-cyan-400 truncate mb-0.5">{msg.subject}</p>
+                  <p className="text-xs text-slate-500 truncate">
+                    {threadReplies.length > 0 && <span className="text-indigo-400 font-semibold">Tú: </span>}
                     {parseMessage(lastMsg.message || '').text}
                   </p>
                 </div>
@@ -224,37 +211,33 @@ export default function MessageList({ messages, currentEmail }) {
 
       {/* ── 2. Right Pane (Chat conversation thread) ── */}
       <div className={clsx(
-        "md:col-span-2 flex flex-col h-full bg-[#0b141a] relative",
+        "md:col-span-2 flex flex-col h-full bg-slate-950 relative",
         !selectedMessage ? "hidden md:flex" : "flex"
       )}>
         {selectedMessage ? (
           <>
-            {/* Chat Window Header */}
-            <div className="p-3 bg-[#202c33] border-b border-[#222e35] flex items-center justify-between shrink-0">
+            <div className="p-3 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                {/* Back button visible only on mobile */}
                 <button
                   onClick={() => setSelectedMessage(null)}
                   className="p-1 -ml-1 text-slate-400 hover:text-white transition-colors md:hidden shrink-0"
                 >
                   <ArrowLeft className="w-6 h-6" />
                 </button>
-                <div className="w-10 h-10 rounded-full bg-emerald-600/20 flex items-center justify-center text-emerald-400 font-bold text-base shrink-0">
+                <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold text-base shrink-0 border border-indigo-500/20">
                   {selectedMessage.sender?.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-slate-200 text-sm truncate">{selectedMessage.sender}</p>
-                  <p className="text-[10px] text-emerald-400 font-medium">Asunto: {selectedMessage.subject}</p>
+                  <p className="font-semibold text-slate-100 text-sm truncate">{selectedMessage.sender}</p>
+                  <p className="text-[10px] text-cyan-400 font-medium truncate">Asunto: {selectedMessage.subject}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-slate-400">
-                <Smile className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
+              <div className="flex items-center gap-3 text-slate-500">
                 <MoreVertical className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
               </div>
             </div>
 
-            {/* Chat Bubbles Scroll Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0b141a] WhatsApp-doodle-bg relative">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-950 to-slate-900 relative">
               {threadMessages.map((msg) => {
                 const isOutgoing = msg.subject?.startsWith('Re: ') || msg.sender === 'Yo' || msg.sender === senderName;
                 const parsed = parseMessage(msg.message || '');
@@ -264,38 +247,34 @@ export default function MessageList({ messages, currentEmail }) {
                     isOutgoing ? "justify-end" : "justify-start"
                   )}>
                     <div className={clsx(
-                      "max-w-[70%] rounded-xl px-3 py-2 text-sm shadow-md relative break-words flex flex-col gap-1.5",
+                      "max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 text-sm shadow-xl relative break-words flex flex-col gap-1.5",
                       isOutgoing 
-                        ? "bg-[#005c4b] text-[#e9edef] rounded-tr-none" 
-                        : "bg-[#202c33] text-[#e9edef] rounded-tl-none"
+                        ? "bg-indigo-600 text-white rounded-br-sm border border-indigo-500" 
+                        : "bg-slate-800 text-slate-100 rounded-bl-sm border border-slate-700"
                     )}>
-                      {/* Sender label in bubble if not outgoing */}
                       {!isOutgoing && (
-                        <span className="text-[10px] text-emerald-400 font-bold leading-none select-none">
+                        <span className="text-[10px] text-cyan-400 font-bold leading-none select-none">
                           {msg.sender}
                         </span>
                       )}
 
-                      {/* Message Content */}
-                      <p className="whitespace-pre-wrap leading-relaxed text-sm pr-12">
+                      <p className="whitespace-pre-wrap leading-relaxed text-sm pr-8 pb-5">
                         {parsed.text}
                       </p>
 
-                      {/* Render attachments if present */}
                       {parsed.attachments?.length > 0 && (
-                        <div className="grid grid-cols-1 gap-2 pt-1 border-t border-slate-700/40 mt-1">
+                        <div className="grid grid-cols-1 gap-2 pt-2 border-t border-white/10 mt-1 pb-4">
                           {parsed.attachments.map((file, idx) => (
                             <AttachmentCard key={idx} file={file} isOutgoing={isOutgoing} />
                           ))}
                         </div>
                       )}
 
-                      {/* Timestamp & check icon */}
-                      <div className="absolute bottom-1 right-2 flex items-center gap-1 select-none text-[9px] text-slate-400">
+                      <div className="absolute bottom-2 right-3 flex items-center gap-1 select-none text-[9px] opacity-70">
                         <span>
                           {new Date(msg.createdAt).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
                         </span>
-                        {isOutgoing && <Check className="w-3 h-3 text-sky-400 shrink-0" />}
+                        {isOutgoing && <Check className="w-3 h-3 text-white shrink-0" />}
                       </div>
                     </div>
                   </div>
@@ -304,68 +283,56 @@ export default function MessageList({ messages, currentEmail }) {
               <div ref={chatEndRef} />
             </div>
 
-            {/* Chat Bottom Bar (Reply Form) */}
-            <form onSubmit={handleSendReply} className="p-3 bg-[#202c33] border-t border-[#222e35] flex items-center gap-2 shrink-0">
-              
-              {/* Optional: Compact sender name config, toggle or input */}
-              <div className="flex flex-col gap-1 shrink-0 w-24">
-                <span className="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Remitente:</span>
+            <form onSubmit={handleSendReply} className="p-3 bg-slate-900/80 backdrop-blur-md border-t border-slate-800 flex items-center gap-2 shrink-0">
+              <div className="flex flex-col gap-1 shrink-0 w-20 md:w-24">
                 <input
                   type="text"
                   value={senderName}
                   onChange={e => setSenderName(e.target.value)}
-                  placeholder="Nombre"
+                  placeholder="Tu Nombre"
                   required
-                  className="bg-[#111b21] border border-[#222e35] text-slate-200 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-emerald-500 w-full"
+                  className="bg-slate-950 border border-slate-800 text-slate-200 text-[10px] md:text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-indigo-500 w-full"
                 />
               </div>
 
-              {/* Message Input field */}
               <input
                 type="text"
                 value={replyText}
                 onChange={e => setReplyText(e.target.value)}
-                placeholder={`Responder a ${selectedMessage.sender}...`}
+                placeholder="Escribe tu mensaje..."
                 required
                 disabled={loadingReply}
-                className="flex-1 bg-[#2a3942] border-none text-slate-200 text-sm rounded-lg px-4 py-2.5 focus:outline-none placeholder-slate-400 w-full"
+                className="flex-1 bg-slate-950 border border-slate-800 text-slate-100 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 placeholder-slate-500 w-full shadow-inner"
               />
 
-              {/* Send Button */}
               <button
                 type="submit"
                 disabled={!replyText.trim() || loadingReply}
                 className={clsx(
-                  "p-2.5 rounded-full text-white transition-all flex items-center justify-center shrink-0",
+                  "p-3 rounded-xl text-white transition-all flex items-center justify-center shrink-0 shadow-lg",
                   !replyText.trim() || loadingReply
-                    ? "bg-[#202c33] text-slate-500 cursor-not-allowed"
-                    : "bg-[#00a884] hover:bg-[#008f72] hover:scale-105 active:scale-95"
+                    ? "bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-700"
+                    : "bg-indigo-600 hover:bg-indigo-500 border border-indigo-400 hover:scale-105 active:scale-95"
                 )}
               >
-                {loadingReply ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Send className="w-5 h-5" />
-                )}
+                {loadingReply ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
               </button>
             </form>
           </>
         ) : (
-          /* Empty/No message selected state */
-          <div className="flex-1 flex flex-col items-center justify-center bg-[#222e35]/10 text-slate-500 space-y-4 p-8">
-            <div className="p-5 bg-[#202c33] rounded-full border border-[#222e35]">
-              <MailOpen className="w-16 h-16 text-slate-500/40" />
+          <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 text-slate-500 space-y-4 p-8">
+            <div className="p-6 bg-slate-900 rounded-full border border-slate-800 shadow-xl shadow-indigo-500/5">
+              <MailOpen className="w-16 h-16 text-indigo-500/30" />
             </div>
-            <div className="text-center space-y-1 max-w-sm">
-              <h3 className="text-lg font-medium text-slate-300">TempMail Web</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Selecciona un correo de la lista de la izquierda para ver su conversación. Puedes recibir múltiples correos y chatear con ellos de forma segura.
+            <div className="text-center space-y-2 max-w-sm">
+              <h3 className="text-xl font-medium text-slate-200">TempMail Chat</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Selecciona un correo para iniciar la conversación. Diseño premium personalizado inspirado en tus apps de chat favoritas.
               </p>
             </div>
           </div>
         )}
       </div>
-
     </div>
   );
 }
