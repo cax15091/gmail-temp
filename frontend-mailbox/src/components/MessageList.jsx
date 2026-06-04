@@ -4,7 +4,7 @@ import {
   MailOpen, Inbox, Paperclip, Download,
   Image, FileText, FileArchive, File,
   Send, X, Loader2, Check, ArrowLeft,
-  MoreVertical, Search, Smile
+  Search, Smile, MessageCircle
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -50,7 +50,7 @@ function AttachmentCard({ file, isOutgoing }) {
     <div className={clsx(
       "border rounded-xl overflow-hidden text-xs max-w-xs transition-all",
       isOutgoing 
-        ? "border-indigo-400/30 bg-indigo-500/20 hover:bg-indigo-500/40" 
+        ? "border-blue-400/30 bg-blue-500/20 hover:bg-blue-500/40" 
         : "border-slate-600/60 bg-slate-700/40 hover:bg-slate-700/70"
     )}>
       {isImage && (
@@ -60,13 +60,13 @@ function AttachmentCard({ file, isOutgoing }) {
         />
       )}
       <div className="flex items-center gap-2 p-2">
-        <FileIcon type={file.type} className="w-4 h-4 text-indigo-300 shrink-0" />
+        <FileIcon type={file.type} className="w-4 h-4 text-blue-300 shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-slate-100 truncate font-medium">{file.name}</p>
           <p className="text-slate-400 text-[10px]">{formatBytes(file.size)}</p>
         </div>
         <button onClick={handleDownload} title="Descargar"
-          className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 transition-colors shrink-0">
+          className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 transition-colors shrink-0">
           <Download className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -131,8 +131,8 @@ export default function MessageList({ messages, currentEmail }) {
   if (!messages || messages.length === 0) {
     return (
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-4 min-h-[400px]">
-        <div className="p-4 bg-slate-800 rounded-full shadow-inner shadow-indigo-500/10">
-          <Inbox className="w-10 h-10 text-indigo-400" />
+        <div className="p-4 bg-slate-800 rounded-full shadow-inner shadow-blue-500/10">
+          <Inbox className="w-10 h-10 text-blue-400" />
         </div>
         <div className="space-y-1">
           <h3 className="text-xl font-medium text-slate-100">Bandeja de entrada vacía</h3>
@@ -152,18 +152,18 @@ export default function MessageList({ messages, currentEmail }) {
       )}>
         <div className="p-3 bg-slate-800/80 flex items-center justify-between backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-sky-500 flex items-center justify-center text-white font-bold text-sm shadow-lg">
               M
             </div>
             <span className="font-semibold text-slate-100 text-sm">Mensajes</span>
           </div>
-          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
             {originalMessages.length} hilos
           </span>
         </div>
 
         <div className="p-2 bg-slate-900 border-b border-slate-800">
-          <div className="relative bg-slate-950 rounded-lg flex items-center px-3 py-1.5 gap-2 border border-slate-800 focus-within:border-indigo-500/50 transition-colors">
+          <div className="relative bg-slate-950 rounded-lg flex items-center px-3 py-1.5 gap-2 border border-slate-800 focus-within:border-blue-500/50 transition-colors">
             <Search className="w-4 h-4 text-slate-500 shrink-0" />
             <input
               type="text"
@@ -175,7 +175,7 @@ export default function MessageList({ messages, currentEmail }) {
           </div>
         </div>
 
-        <div className="overflow-y-auto flex-1 divide-y divide-slate-800/50">
+        <div className="overflow-y-auto flex-1 divide-y divide-slate-800/50 p-2 space-y-2">
           {originalMessages.map((msg) => {
             const isSelected = selectedMessage?._id === msg._id;
             const threadReplies = messages.filter(m => m.subject === `Re: ${msg.subject}`);
@@ -184,25 +184,39 @@ export default function MessageList({ messages, currentEmail }) {
             return (
               <button key={msg._id} onClick={() => setSelectedMessage(msg)}
                 className={clsx(
-                  "w-full text-left p-3 flex gap-3 transition-colors",
-                  isSelected ? "bg-slate-800/80 border-l-2 border-indigo-500" : "hover:bg-slate-800/40 bg-transparent border-l-2 border-transparent"
+                  "w-full text-left p-4 rounded-xl flex flex-col gap-2 transition-all shadow-sm border",
+                  isSelected 
+                    ? "bg-slate-800 border-blue-500 shadow-blue-500/10" 
+                    : "bg-slate-900 border-slate-800 hover:border-slate-600 hover:bg-slate-800/50"
                 )}>
-                <div className="w-11 h-11 rounded-full bg-slate-800 flex items-center justify-center text-indigo-300 font-bold shrink-0 text-base shadow-inner border border-slate-700">
-                  {msg.sender?.charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-baseline mb-0.5">
-                    <span className="font-semibold text-slate-100 text-sm truncate">{msg.sender}</span>
-                    <span className="text-[10px] text-indigo-300/70 shrink-0">
-                      {formatDistanceToNow(new Date(lastMsg.createdAt), { addSuffix: true, locale: es })}
-                    </span>
+                
+                <div className="flex gap-3 w-full">
+                  <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-blue-300 font-bold shrink-0 text-base shadow-inner border border-slate-700">
+                    {msg.sender?.charAt(0).toUpperCase()}
                   </div>
-                  <p className="text-xs font-medium text-cyan-400 truncate mb-0.5">{msg.subject}</p>
-                  <p className="text-xs text-slate-500 truncate">
-                    {threadReplies.length > 0 && <span className="text-indigo-400 font-semibold">Tú: </span>}
-                    {parseMessage(lastMsg.message || '').text}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline mb-0.5">
+                      <span className="font-semibold text-slate-100 text-sm truncate">{msg.sender}</span>
+                      <span className="text-[10px] text-blue-300/70 shrink-0">
+                        {formatDistanceToNow(new Date(lastMsg.createdAt), { addSuffix: true, locale: es })}
+                      </span>
+                    </div>
+                    <p className="text-xs font-medium text-sky-400 truncate mb-1">{msg.subject}</p>
+                    <p className="text-xs text-slate-400 truncate">
+                      {threadReplies.length > 0 && <span className="text-blue-400 font-semibold">Tú: </span>}
+                      {parseMessage(lastMsg.message || '').text}
+                    </p>
+                  </div>
                 </div>
+
+                {/* BOTÓN EXPLÍCITO DE RESPONDER DENTRO DEL ITEM */}
+                <div className="w-full flex justify-end mt-1">
+                  <div className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md">
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    Responder
+                  </div>
+                </div>
+
               </button>
             );
           })}
@@ -224,17 +238,15 @@ export default function MessageList({ messages, currentEmail }) {
                 >
                   <ArrowLeft className="w-6 h-6" />
                 </button>
-                <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold text-base shrink-0 border border-indigo-500/20">
+                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 font-bold text-base shrink-0 border border-blue-500/20">
                   {selectedMessage.sender?.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-slate-100 text-sm truncate">{selectedMessage.sender}</p>
-                  <p className="text-[10px] text-cyan-400 font-medium truncate">Asunto: {selectedMessage.subject}</p>
+                  <p className="text-[10px] text-sky-400 font-medium truncate">Asunto: {selectedMessage.subject}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 text-slate-500">
-                <MoreVertical className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
-              </div>
+              {/* Removed MoreVertical dot icon completely per user request */}
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-950 to-slate-900 relative">
@@ -249,11 +261,11 @@ export default function MessageList({ messages, currentEmail }) {
                     <div className={clsx(
                       "max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 text-sm shadow-xl relative break-words flex flex-col gap-1.5",
                       isOutgoing 
-                        ? "bg-indigo-600 text-white rounded-br-sm border border-indigo-500" 
+                        ? "bg-blue-600 text-white rounded-br-sm border border-blue-500" 
                         : "bg-slate-800 text-slate-100 rounded-bl-sm border border-slate-700"
                     )}>
                       {!isOutgoing && (
-                        <span className="text-[10px] text-cyan-400 font-bold leading-none select-none">
+                        <span className="text-[10px] text-sky-400 font-bold leading-none select-none">
                           {msg.sender}
                         </span>
                       )}
@@ -290,7 +302,7 @@ export default function MessageList({ messages, currentEmail }) {
                   value={senderName}
                   onChange={e => setSenderName(e.target.value)}
                   placeholder="Tu Nombre"
-                  className="bg-slate-950 border border-slate-800 text-slate-200 text-[10px] md:text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-indigo-500 w-full"
+                  className="bg-slate-950 border border-slate-800 text-slate-200 text-[10px] md:text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-blue-500 w-full"
                 />
               </div>
 
@@ -301,7 +313,7 @@ export default function MessageList({ messages, currentEmail }) {
                 placeholder="Escribe tu mensaje..."
                 required
                 disabled={loadingReply}
-                className="flex-1 bg-slate-950 border border-slate-800 text-slate-100 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500 placeholder-slate-500 w-full shadow-inner"
+                className="flex-1 bg-slate-950 border border-slate-800 text-slate-100 text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 placeholder-slate-500 w-full shadow-inner"
               />
 
               <button
@@ -311,7 +323,7 @@ export default function MessageList({ messages, currentEmail }) {
                   "p-3 rounded-xl text-white transition-all flex items-center justify-center shrink-0 shadow-lg",
                   !replyText.trim() || loadingReply
                     ? "bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-700"
-                    : "bg-indigo-600 hover:bg-indigo-500 border border-indigo-400 hover:scale-105 active:scale-95"
+                    : "bg-blue-600 hover:bg-blue-500 border border-blue-400 hover:scale-105 active:scale-95"
                 )}
               >
                 {loadingReply ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
@@ -320,13 +332,13 @@ export default function MessageList({ messages, currentEmail }) {
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-slate-950 text-slate-500 space-y-4 p-8">
-            <div className="p-6 bg-slate-900 rounded-full border border-slate-800 shadow-xl shadow-indigo-500/5">
-              <MailOpen className="w-16 h-16 text-indigo-500/30" />
+            <div className="p-6 bg-slate-900 rounded-full border border-slate-800 shadow-xl shadow-blue-500/5">
+              <MailOpen className="w-16 h-16 text-blue-500/30" />
             </div>
             <div className="text-center space-y-2 max-w-sm">
               <h3 className="text-xl font-medium text-slate-200">TempMail Chat</h3>
               <p className="text-sm text-slate-500 leading-relaxed">
-                Selecciona un correo para iniciar la conversación. Diseño premium personalizado inspirado en tus apps de chat favoritas.
+                Selecciona un correo de la lista para iniciar la conversación.
               </p>
             </div>
           </div>

@@ -58,7 +58,7 @@ function AttachmentCard({ file, isOutgoing }) {
     <div className={clsx(
       "border rounded-xl overflow-hidden text-xs max-w-xs transition-all",
       isOutgoing 
-        ? "border-indigo-400/30 bg-indigo-500/20 hover:bg-indigo-500/40" 
+        ? "border-blue-400/30 bg-blue-500/20 hover:bg-blue-500/40" 
         : "border-slate-600/60 bg-slate-700/40 hover:bg-slate-700/70"
     )}>
       {isImage && (
@@ -68,13 +68,13 @@ function AttachmentCard({ file, isOutgoing }) {
         />
       )}
       <div className="flex items-center gap-2 p-2">
-        <FileIcon type={file.type} className="w-4 h-4 text-indigo-300 shrink-0" />
+        <FileIcon type={file.type} className="w-4 h-4 text-blue-300 shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-slate-100 truncate font-medium">{file.name}</p>
           <p className="text-slate-400 text-[10px]">{formatBytes(file.size)}</p>
         </div>
         <button onClick={handleDownload} title="Descargar"
-          className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 transition-colors shrink-0">
+          className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/40 transition-colors shrink-0">
           <Download className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -189,11 +189,11 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
     return (
       <div className="flex flex-col items-center justify-center h-[550px] bg-slate-950 p-6 relative overflow-hidden">
         {/* Background glow effects */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 w-full max-w-sm shadow-2xl relative z-10">
           <div className="text-center mb-8 space-y-2">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-cyan-500 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-blue-500/20 mb-4">
               <MessageSquare className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold text-white tracking-tight">Iniciar Chat</h2>
@@ -203,7 +203,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
           <form onSubmit={handleSetupSubmit} className="space-y-5">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                <User className="w-4 h-4 text-indigo-400" /> Tu Nombre
+                <User className="w-4 h-4 text-blue-400" /> Tu Nombre
               </label>
               <input
                 required
@@ -212,7 +212,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
                 value={senderName}
                 onChange={e => setSenderName(e.target.value)}
                 placeholder="Ej. Juan Pérez"
-                className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-600 shadow-inner"
+                className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-600 shadow-inner"
               />
             </div>
             <div className="space-y-1.5">
@@ -225,14 +225,14 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
                 placeholder="Ej. Soporte Técnico"
-                className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-600 shadow-inner"
+                className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-slate-600 shadow-inner"
               />
             </div>
             
             <button
               type="submit"
               disabled={!senderName.trim() || !subject.trim()}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:border-slate-700 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/25 active:scale-95 disabled:active:scale-100 border border-indigo-400 mt-2"
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:border-slate-700 text-white font-medium py-3 rounded-xl transition-all shadow-lg shadow-blue-500/25 active:scale-95 disabled:active:scale-100 border border-blue-400 mt-2"
             >
               Comenzar Conversación
             </button>
@@ -257,7 +257,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
       {/* ── 1. Header (Recipient info & Config toggler) ── */}
       <div className="p-3 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between shrink-0 select-none z-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 border border-indigo-500/20 font-bold text-base shrink-0 shadow-inner">
+          <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20 font-bold text-base shrink-0 shadow-inner">
             R
           </div>
           <div>
@@ -277,7 +277,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
             title="Ajustes de Perfil"
             className={clsx(
               "p-2 rounded-full hover:bg-slate-800 hover:text-white transition-all flex items-center gap-1.5 text-xs font-medium border",
-              showConfig ? "border-indigo-500/40 text-indigo-400 bg-indigo-500/10" : "border-transparent"
+              showConfig ? "border-blue-500/40 text-blue-400 bg-blue-500/10" : "border-transparent"
             )}
           >
             <Settings className="w-4 h-4" />
@@ -302,7 +302,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
                   setSenderName(e.target.value);
                   localStorage.setItem('sender_name', e.target.value);
                 }}
-                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
             <div>
@@ -315,7 +315,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
                   setSubject(e.target.value);
                   localStorage.setItem('sender_subject', e.target.value);
                 }}
-                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-indigo-500 transition-colors"
+                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 transition-colors"
               />
             </div>
           </div>
@@ -336,7 +336,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center text-center h-full text-slate-500 p-6 space-y-3 select-none">
             <div className="p-4 bg-slate-800 rounded-full shadow-inner border border-slate-700">
-              <MessageSquare className="w-8 h-8 text-indigo-500/50" />
+              <MessageSquare className="w-8 h-8 text-blue-500/50" />
             </div>
             <p className="text-xs text-slate-400 max-w-xs leading-relaxed">
               La conexión está establecida. Escribe un mensaje abajo para comenzar a chatear.
@@ -358,7 +358,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
               <div className={clsx(
                 "max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm shadow-xl relative break-words flex flex-col gap-1.5",
                 isOutgoing 
-                  ? "bg-indigo-600 text-white rounded-br-sm border border-indigo-500" 
+                  ? "bg-blue-600 text-white rounded-br-sm border border-blue-500" 
                   : "bg-slate-800 text-slate-100 rounded-bl-sm border border-slate-700"
               )}>
                 {/* Bubble sender label */}
@@ -396,12 +396,12 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
 
       {/* ── 4. Drag & drop overlay indicator ── */}
       {dragging && (
-        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center border-2 border-dashed border-indigo-500 rounded-2xl z-20 m-4 pointer-events-none transition-all">
-          <div className="p-6 bg-indigo-500/20 rounded-full mb-4 shadow-[0_0_30px_rgba(99,102,241,0.3)]">
-            <Paperclip className="w-12 h-12 text-indigo-400 animate-bounce" />
+        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center border-2 border-dashed border-blue-500 rounded-2xl z-20 m-4 pointer-events-none transition-all">
+          <div className="p-6 bg-blue-500/20 rounded-full mb-4 shadow-[0_0_30px_rgba(99,102,241,0.3)]">
+            <Paperclip className="w-12 h-12 text-blue-400 animate-bounce" />
           </div>
           <p className="text-lg font-bold text-white tracking-wide">Suelta archivos para adjuntar</p>
-          <p className="text-sm text-indigo-300 mt-1">Límite de 25MB total</p>
+          <p className="text-sm text-blue-300 mt-1">Límite de 25MB total</p>
         </div>
       )}
 
@@ -410,8 +410,8 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
         <div className="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-3 overflow-x-auto shrink-0 select-none shadow-inner">
           {attachments.map((file, idx) => (
             <div key={idx} className="relative bg-slate-800 border border-slate-700 rounded-xl p-2.5 flex items-center gap-2.5 max-w-[180px] text-xs shrink-0 shadow-md">
-              <div className="p-1.5 bg-indigo-500/10 rounded-lg">
-                <FileIcon type={file.type} className="w-4 h-4 text-indigo-400 shrink-0" />
+              <div className="p-1.5 bg-blue-500/10 rounded-lg">
+                <FileIcon type={file.type} className="w-4 h-4 text-blue-400 shrink-0" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-slate-200 font-medium truncate">{file.name}</p>
@@ -464,7 +464,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
           onChange={(e) => setMessageText(e.target.value)}
           placeholder={activeEmail ? "Escribe un mensaje..." : "Esperando conexión..."}
           disabled={isDisabled}
-          className="flex-1 bg-slate-950 border border-slate-800 text-slate-100 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 placeholder-slate-500 w-full disabled:opacity-50 shadow-inner transition-all"
+          className="flex-1 bg-slate-950 border border-slate-800 text-slate-100 text-sm rounded-xl px-4 py-3.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 placeholder-slate-500 w-full disabled:opacity-50 shadow-inner transition-all"
         />
 
         {/* Circular Send Button */}
@@ -475,7 +475,7 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
             "p-3.5 rounded-xl text-white transition-all flex items-center justify-center shrink-0 shadow-lg",
             isDisabled || !messageText.trim()
               ? "bg-slate-800 text-slate-600 cursor-not-allowed border border-slate-700"
-              : "bg-indigo-600 hover:bg-indigo-500 hover:scale-105 active:scale-95 border border-indigo-400"
+              : "bg-blue-600 hover:bg-blue-500 hover:scale-105 active:scale-95 border border-blue-400"
           )}
         >
           {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}

@@ -131,10 +131,10 @@ function App() {
 
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center p-3 bg-indigo-500/10 rounded-full mb-1">
-            <Mail className="w-8 h-8 text-indigo-400" />
+          <div className="inline-flex items-center justify-center p-3 bg-blue-500/10 rounded-full mb-1">
+            <Mail className="w-8 h-8 text-blue-400" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent bg-clip-text">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 text-transparent bg-clip-text">
             TempMail Pro
           </h1>
           <p className="text-slate-400 max-w-lg mx-auto text-xs md:text-sm">
@@ -147,10 +147,10 @@ function App() {
               const perm = await Notification.requestPermission();
               setNotifAllowed(perm === 'granted');
             }}
-            className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border border-slate-800 text-slate-400 hover:text-indigo-400 hover:border-indigo-500/50 transition-all bg-slate-900"
+            className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border border-slate-800 text-slate-400 hover:text-blue-400 hover:border-blue-500/50 transition-all bg-slate-900"
           >
             {notifAllowed
-              ? <><Bell className="w-3 h-3 text-indigo-400" /> Notificaciones activas</>
+              ? <><Bell className="w-3 h-3 text-blue-400" /> Notificaciones activas</>
               : <><BellOff className="w-3 h-3 text-slate-500" /> Activar notificaciones</>
             }
           </button>
@@ -186,7 +186,7 @@ function App() {
               <div className="flex items-center gap-3">
                 <h2 className="text-lg md:text-xl font-semibold text-slate-100">Bandeja de Entrada</h2>
                 {newMsgCount > 0 && (
-                  <span className="px-2.5 py-0.5 text-[10px] bg-indigo-500 text-white rounded-full animate-pulse font-bold">
+                  <span className="px-2.5 py-0.5 text-[10px] bg-blue-500 text-white rounded-full animate-pulse font-bold">
                     +{newMsgCount} nuevo{newMsgCount > 1 ? 's' : ''}
                   </span>
                 )}
