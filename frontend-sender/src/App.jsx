@@ -12,17 +12,28 @@ function App() {
   const [activeEmail, setActiveEmail] = useState(null);
   const [messages, setMessages] = useState([]);
 
-  // 1. Fetch the latest active email on load
+  // 1. Fetch the active email: from ?to= URL param OR latest
   useEffect(() => {
-    const fetchLatest = async () => {
+    const fetchEmail = async () => {
       try {
-        const response = await axios.get(`${API_URL}/emails/latest`);
-        setActiveEmail(response.data);
+        // Check if there's a ?to= in the URL (invite link)
+        const params = new URLSearchParams(window.location.search);
+        const toEmail = params.get('to');
+        
+        if (toEmail) {
+          // Use the invite link email — GET /emails/:email auto-creates it
+          const res = await axios.get(`${API_URL}/emails/${toEmail}`);
+          setActiveEmail(res.data.email); // The email object
+        } else {
+          // Fallback: fetch the latest active email
+          const response = await axios.get(`${API_URL}/emails/latest`);
+          setActiveEmail(response.data);
+        }
       } catch (err) {
         console.log('No active email found yet.');
       }
     };
-    fetchLatest();
+    fetchEmail();
   }, []);
 
   // 2. Setup Socket.IO connection and listen for new active emails and new messages

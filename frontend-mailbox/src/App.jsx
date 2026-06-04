@@ -84,7 +84,7 @@ function App() {
   }, [socket, currentEmail]);
 
   // ─── Generate new email ────────────────────────────────────────────────────
-  const generateEmail = async () => {
+  const generateEmail = async (customAlias) => {
     setLoading(true);
     try {
       // Request notification permission on first email generation
@@ -92,7 +92,7 @@ function App() {
         const perm = await Notification.requestPermission();
         setNotifAllowed(perm === 'granted');
       }
-      const response = await axios.post(`${API_URL}/emails`);
+      const response = await axios.post(`${API_URL}/emails`, { customAlias });
       const email = response.data;
       setCurrentEmail(email);
       setMessages([]);
@@ -100,7 +100,7 @@ function App() {
       localStorage.setItem('tempmail_email', JSON.stringify(email));
       setRefreshKey(prev => prev + 1);
     } catch (error) {
-      console.error('Failed to generate email', error);
+      console.error('Failed to generate email:', error);
     } finally {
       setLoading(false);
     }

@@ -4,51 +4,73 @@ import clsx from 'clsx';
 
 export default function EmailGenerator({ currentEmail, onGenerate, loading }) {
   const [copied, setCopied] = useState(false);
+  const [alias, setAlias] = useState('');
 
-  const handleCopy = () => {
-    if (!currentEmail) return;
-    navigator.clipboard.writeText(currentEmail.email);
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleGenerate = () => {
+    onGenerate(alias.trim() || undefined);
+  };
+
+  const inviteLink = currentEmail 
+    ? `https://frontend-sender.vercel.app/?to=${currentEmail.email}`
+    : '';
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col md:flex-row items-center gap-4">
-        <div className="relative flex-1 w-full">
+      <div className="flex flex-col md:flex-row items-stretch gap-4">
+        <div className="relative flex-1 w-full flex items-center bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 shadow-inner focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition-colors">
           <input
             type="text"
-            readOnly
-            value={currentEmail ? currentEmail.email : 'Genera un correo para empezar...'}
-            className="w-full bg-slate-950 border border-slate-800 text-slate-200 text-lg rounded-xl px-4 py-4 pr-12 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-inner"
+            value={alias}
+            onChange={(e) => setAlias(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+            placeholder={currentEmail ? "Tu alias..." : "Escribe tu nombre o alias (ej. carlos)"}
+            className="w-full bg-transparent text-slate-200 text-base md:text-lg focus:outline-none"
+            readOnly={!!currentEmail}
           />
-          {currentEmail && (
-            <button
-              onClick={handleCopy}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-blue-400 transition-colors"
-              title="Copiar correo"
-            >
-              {copied ? <Check className="w-5 h-5 text-blue-400" /> : <Copy className="w-5 h-5" />}
-            </button>
-          )}
+          {!currentEmail && <span className="text-slate-500 ml-2 whitespace-nowrap">@tempmail.local</span>}
         </div>
-        <button
-          onClick={onGenerate}
-          disabled={loading}
-          className={clsx(
-            "w-full md:w-auto px-8 py-4 rounded-xl font-medium text-white transition-all flex items-center justify-center space-x-2 shrink-0 border border-blue-400/50 shadow-lg",
-            loading 
-              ? "bg-slate-800 cursor-not-allowed border-slate-700 text-slate-500" 
-              : "bg-blue-600 hover:bg-blue-500 hover:shadow-blue-500/25 active:scale-95"
-          )}
-        >
-          {loading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <span>Generar Nuevo</span>
-          )}
-        </button>
+        {!currentEmail && (
+          <button
+            onClick={handleGenerate}
+            disabled={loading}
+            className={clsx(
+              "w-full md:w-auto px-8 py-3 md:py-0 rounded-xl font-medium text-white transition-all flex items-center justify-center space-x-2 shrink-0 border border-blue-400/50 shadow-lg",
+              loading 
+                ? "bg-slate-800 cursor-not-allowed border-slate-700 text-slate-500" 
+                : "bg-blue-600 hover:bg-blue-500 hover:shadow-blue-500/25 active:scale-95"
+            )}
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Crear Enlace</span>}
+          </button>
+        )}
       </div>
+
+      {currentEmail && (
+        <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex flex-col gap-3">
+          <p className="text-sm text-blue-300 font-medium">✅ Bandeja Abierta: {currentEmail.email}</p>
+          <p className="text-xs text-slate-400">Comparte este enlace con tu amigo para que te mande mensajes sin esperar:</p>
+          <div className="flex items-center gap-2 bg-slate-900 rounded-lg p-2 border border-slate-800">
+            <input 
+              type="text" 
+              readOnly 
+              value={inviteLink} 
+              className="flex-1 bg-transparent text-xs text-slate-300 focus:outline-none"
+            />
+            <button
+              onClick={() => handleCopy(inviteLink)}
+              className="p-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-md transition-colors flex items-center gap-1 text-xs"
+            >
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              <span className="hidden sm:inline">{copied ? 'Copiado' : 'Copiar'}</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

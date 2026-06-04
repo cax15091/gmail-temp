@@ -16,10 +16,17 @@ const generateRandomEmail = () => {
   return `${email}@tempmail.local`;
 };
 
-// POST /api/emails - Create a new temporary email
+// POST /api/emails - Create or Connect to a temporary email
 router.post('/emails', (req, res) => {
   try {
-    const emailAddress = generateRandomEmail();
+    const { customAlias } = req.body || {};
+    let emailAddress = customAlias ? `${customAlias}@tempmail.local` : generateRandomEmail();
+    
+    let existingEmail = tempEmails.find(e => e.email === emailAddress);
+    if (existingEmail) {
+      return res.status(200).json(existingEmail);
+    }
+
     const newEmail = {
       _id: crypto.randomUUID(),
       email: emailAddress,
@@ -56,9 +63,15 @@ router.get('/emails/latest', (req, res) => {
 // GET /api/emails/:email - Get email details and its messages
 router.get('/emails/:email', (req, res) => {
   try {
-    const email = tempEmails.find(e => e.email === req.params.email);
+    let email = tempEmails.find(e => e.email === req.params.email);
     if (!email) {
-      return res.status(404).json({ error: 'Email not found' });
+      email = {
+        _id: crypto.randomUUID(),
+        email: req.params.email,
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      };
+      tempEmails.push(email);
     }
 
     const emailMessages = messages
@@ -76,9 +89,15 @@ router.post('/messages', (req, res) => {
   try {
     const { emailAddress, sender, subject, message } = req.body;
 
-    const email = tempEmails.find(e => e.email === emailAddress);
+    let email = tempEmails.find(e => e.email === emailAddress);
     if (!email) {
-      return res.status(404).json({ error: 'Target email not found' });
+      email = {
+        _id: crypto.randomUUID(),
+        email: emailAddress,
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      };
+      tempEmails.push(email);
     }
 
     const newMessage = {
