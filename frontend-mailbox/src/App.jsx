@@ -126,18 +126,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b141a] p-3 md:p-8 font-sans text-[#e9edef]">
+    <div className="min-h-screen bg-slate-950 p-3 md:p-8 font-sans text-slate-200">
       <div className="max-w-5xl mx-auto space-y-6 md:space-y-8 animate-fade-in">
 
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center p-3 bg-emerald-500/10 rounded-full mb-1">
-            <Mail className="w-8 h-8 text-emerald-400" />
+          <div className="inline-flex items-center justify-center p-3 bg-indigo-500/10 rounded-full mb-1">
+            <Mail className="w-8 h-8 text-indigo-400" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 text-transparent bg-clip-text">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent bg-clip-text">
             TempMail Pro
           </h1>
-          <p className="text-[#8696a0] max-w-lg mx-auto text-xs md:text-sm">
+          <p className="text-slate-400 max-w-lg mx-auto text-xs md:text-sm">
             Tu servicio de correo temporal premium en tiempo real estilo chat. Mantén tu bandeja limpia y tu privacidad a salvo.
           </p>
 
@@ -147,17 +147,17 @@ function App() {
               const perm = await Notification.requestPermission();
               setNotifAllowed(perm === 'granted');
             }}
-            className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border border-[#222e35] text-slate-400 hover:text-emerald-400 hover:border-emerald-500/50 transition-all bg-[#111b21]"
+            className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border border-slate-800 text-slate-400 hover:text-indigo-400 hover:border-indigo-500/50 transition-all bg-slate-900"
           >
             {notifAllowed
-              ? <><Bell className="w-3 h-3 text-emerald-400" /> Notificaciones activas</>
+              ? <><Bell className="w-3 h-3 text-indigo-400" /> Notificaciones activas</>
               : <><BellOff className="w-3 h-3 text-slate-500" /> Activar notificaciones</>
             }
           </button>
         </div>
 
         {/* Main Card (Generator) */}
-        <div className="bg-[#111b21] border border-[#222e35] rounded-2xl p-4 md:p-6 shadow-2xl space-y-4">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-2xl space-y-4">
           <EmailGenerator
             currentEmail={currentEmail}
             onGenerate={generateEmail}
@@ -165,9 +165,9 @@ function App() {
           />
 
           {currentEmail && (
-            <div className="pt-4 border-t border-[#222e35] flex items-center justify-between gap-3">
-              <div className="flex items-center space-x-2 text-[#8696a0]">
-                <Clock className="w-4 h-4 text-emerald-400" />
+            <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
+              <div className="flex items-center space-x-2 text-slate-400">
+                <Clock className="w-4 h-4 text-cyan-400" />
                 <span className="text-xs md:text-sm">Expiración y refresco en:</span>
               </div>
               <Countdown
@@ -184,16 +184,16 @@ function App() {
           <div className="space-y-4 animate-slide-up">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-3">
-                <h2 className="text-lg md:text-xl font-semibold text-slate-200">Bandeja de Entrada</h2>
+                <h2 className="text-lg md:text-xl font-semibold text-slate-100">Bandeja de Entrada</h2>
                 {newMsgCount > 0 && (
-                  <span className="px-2.5 py-0.5 text-[10px] bg-[#00a884] text-white rounded-full animate-pulse font-bold">
+                  <span className="px-2.5 py-0.5 text-[10px] bg-indigo-500 text-white rounded-full animate-pulse font-bold">
                     +{newMsgCount} nuevo{newMsgCount > 1 ? 's' : ''}
                   </span>
                 )}
               </div>
               <button
                 onClick={handleRefreshNow}
-                className="flex items-center space-x-2 text-xs md:text-sm text-emerald-400 hover:text-emerald-300 transition-colors"
+                className="flex items-center space-x-2 text-xs md:text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Refrescar ahora</span>

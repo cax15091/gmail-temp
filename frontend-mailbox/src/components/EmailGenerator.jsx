@@ -20,15 +20,15 @@ export default function EmailGenerator({ currentEmail, onGenerate, loading }) {
             type="text"
             readOnly
             value={currentEmail ? currentEmail.email : 'Genera un correo para empezar...'}
-            className="w-full bg-[#2a3942] border border-[#222e35] text-[#e9edef] text-lg rounded-xl px-4 py-4 pr-12 focus:outline-none focus:border-[#00a884] transition-colors"
+            className="w-full bg-slate-950 border border-slate-800 text-slate-200 text-lg rounded-xl px-4 py-4 pr-12 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors shadow-inner"
           />
           {currentEmail && (
             <button
               onClick={handleCopy}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-emerald-400 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-slate-500 hover:text-indigo-400 transition-colors"
               title="Copiar correo"
             >
-              {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
+              {copied ? <Check className="w-5 h-5 text-indigo-400" /> : <Copy className="w-5 h-5" />}
             </button>
           )}
         </div>
@@ -36,10 +36,10 @@ export default function EmailGenerator({ currentEmail, onGenerate, loading }) {
           onClick={onGenerate}
           disabled={loading}
           className={clsx(
-            "w-full md:w-auto px-8 py-4 rounded-xl font-medium text-white transition-all flex items-center justify-center space-x-2 shrink-0",
+            "w-full md:w-auto px-8 py-4 rounded-xl font-medium text-white transition-all flex items-center justify-center space-x-2 shrink-0 border border-indigo-400/50 shadow-lg",
             loading 
-              ? "bg-emerald-600/50 cursor-not-allowed" 
-              : "bg-[#00a884] hover:bg-[#008f72] hover:shadow-lg hover:shadow-emerald-500/20 active:scale-95"
+              ? "bg-slate-800 cursor-not-allowed border-slate-700 text-slate-500" 
+              : "bg-indigo-600 hover:bg-indigo-500 hover:shadow-indigo-500/25 active:scale-95"
           )}
         >
           {loading ? (

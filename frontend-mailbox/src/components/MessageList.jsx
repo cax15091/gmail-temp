@@ -116,7 +116,7 @@ export default function MessageList({ messages, currentEmail }) {
     try {
       await axios.post(`${API_URL}/messages`, {
         emailAddress: currentEmail.email,
-        sender: senderName,
+        sender: senderName.trim() || 'Yo',
         subject: `Re: ${selectedMessage.subject}`,
         message: quotedBody,
       });
@@ -290,7 +290,6 @@ export default function MessageList({ messages, currentEmail }) {
                   value={senderName}
                   onChange={e => setSenderName(e.target.value)}
                   placeholder="Tu Nombre"
-                  required
                   className="bg-slate-950 border border-slate-800 text-slate-200 text-[10px] md:text-xs rounded-lg px-2 py-1.5 focus:outline-none focus:border-indigo-500 w-full"
                 />
               </div>
