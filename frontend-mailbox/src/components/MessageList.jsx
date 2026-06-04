@@ -89,22 +89,31 @@ export default function MessageList({ messages, currentEmail }) {
     }
   }, [messages, selectedMessage]);
 
-  const filteredAllMessages = messages.filter(msg => 
+  // All messages sorted chronologically for unified chat
+  const allSorted = [...messages].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  const filteredMessages = allSorted.filter(msg => 
     msg.sender?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    msg.subject?.toLowerCase().includes(searchQuery.toLowerCase())
+    msg.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    msg.message?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const originalMessages = filteredAllMessages.filter(msg => !msg.subject?.startsWith('Re: '));
+  // Get unique senders for sidebar display
+  const senderMap = new Map();
+  for (const msg of allSorted) {
+    const key = msg.sender || 'Desconocido';
+    if (key === 'Yo' || key === senderName) continue; // skip own messages
+    if (!senderMap.has(key)) senderMap.set(key, msg);
+    else senderMap.set(key, msg); // update to latest
+  }
+  const uniqueSenders = [...senderMap.entries()]; // [senderName, latestMsg]
 
-  const threadMessages = selectedMessage
-    ? messages
-        .filter(m => m._id === selectedMessage._id || m.subject === `Re: ${selectedMessage.subject}`)
-        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-    : [];
+  // Auto-select chat view if not selected
+  const showChat = selectedMessage === 'chat';
 
   const handleSendReply = async (e) => {
     e.preventDefault();
-    if (!replyText.trim() || !currentEmail || !selectedMessage) return;
+    if (!replyText.trim() || !currentEmail || !showChat) return;
     setLoadingReply(true);
 
     const quotedBody = replyText;
@@ -113,7 +122,7 @@ export default function MessageList({ messages, currentEmail }) {
       await axios.post(`${API_URL}/messages`, {
         emailAddress: currentEmail.email,
         sender: senderName.trim() || 'Yo',
-        subject: `Re: ${selectedMessage.subject}`,
+        subject: allSorted.length > 0 ? (allSorted[0].subject?.replace(/^Re: /, '') || 'Chat') : 'Chat',
         message: quotedBody,
       });
       setReplyText('');
@@ -154,7 +163,7 @@ export default function MessageList({ messages, currentEmail }) {
             <span className="font-semibold text-slate-100 text-sm">Mensajes</span>
           </div>
           <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-            {originalMessages.length} hilos
+            {allSorted.length} msgs
           </span>
         </div>
 
@@ -172,50 +181,45 @@ export default function MessageList({ messages, currentEmail }) {
         </div>
 
         <div className="overflow-y-auto flex-1 divide-y divide-slate-800/50 p-2 space-y-2">
-          {originalMessages.map((msg) => {
-            const isSelected = selectedMessage?._id === msg._id;
-            const threadReplies = messages.filter(m => m.subject === `Re: ${msg.subject}`);
-            const lastMsg = threadReplies.length > 0 ? threadReplies[threadReplies.length - 1] : msg;
-
-            return (
-              <button key={msg._id} onClick={() => setSelectedMessage(msg)}
-                className={clsx(
-                  "w-full text-left p-4 rounded-xl flex flex-col gap-2 transition-all shadow-sm border",
-                  isSelected 
-                    ? "bg-slate-800 border-blue-500 shadow-blue-500/10" 
-                    : "bg-slate-900 border-slate-800 hover:border-slate-600 hover:bg-slate-800/50"
-                )}>
-                
-                <div className="flex gap-3 w-full">
-                  <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-blue-300 font-bold shrink-0 text-base shadow-inner border border-slate-700">
-                    {msg.sender?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline mb-0.5">
-                      <span className="font-semibold text-slate-100 text-sm truncate">{msg.sender}</span>
-                      <span className="text-[10px] text-blue-300/70 shrink-0">
-                        {formatDistanceToNow(new Date(lastMsg.createdAt), { addSuffix: true, locale: es })}
-                      </span>
-                    </div>
-                    <p className="text-xs font-medium text-sky-400 truncate mb-1">{msg.subject}</p>
-                    <p className="text-xs text-slate-400 truncate">
-                      {threadReplies.length > 0 && <span className="text-blue-400 font-semibold">Tú: </span>}
-                      {parseMessage(lastMsg.message || '').text}
-                    </p>
-                  </div>
+          {/* Single unified chat entry */}
+          <button onClick={() => setSelectedMessage('chat')}
+            className={clsx(
+              "w-full text-left p-4 rounded-xl flex flex-col gap-2 transition-all shadow-sm border",
+              showChat 
+                ? "bg-slate-800 border-blue-500 shadow-blue-500/10" 
+                : "bg-slate-900 border-slate-800 hover:border-slate-600 hover:bg-slate-800/50"
+            )}>
+            
+            <div className="flex gap-3 w-full">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-sky-500 flex items-center justify-center text-white font-bold shrink-0 text-base shadow-lg">
+                💬
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex justify-between items-baseline mb-0.5">
+                  <span className="font-semibold text-slate-100 text-sm truncate">
+                    {uniqueSenders.length > 0 ? uniqueSenders.map(([name]) => name).join(', ') : 'Chat'}
+                  </span>
+                  {allSorted.length > 0 && (
+                    <span className="text-[10px] text-blue-300/70 shrink-0">
+                      {formatDistanceToNow(new Date(allSorted[allSorted.length - 1].createdAt), { addSuffix: true, locale: es })}
+                    </span>
+                  )}
                 </div>
+                <p className="text-xs text-slate-400 truncate">
+                  {allSorted.length > 0 
+                    ? parseMessage(allSorted[allSorted.length - 1].message || '').text
+                    : 'Sin mensajes aún...'}
+                </p>
+              </div>
+            </div>
 
-                {/* BOTÓN EXPLÍCITO DE RESPONDER DENTRO DEL ITEM */}
-                <div className="w-full flex justify-end mt-1">
-                  <div className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md">
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    Responder
-                  </div>
-                </div>
-
-              </button>
-            );
-          })}
+            <div className="w-full flex justify-end mt-1">
+              <div className="flex items-center gap-1.5 bg-blue-700 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md">
+                <MessageCircle className="w-3.5 h-3.5" />
+                Abrir Chat ({allSorted.length})
+              </div>
+            </div>
+          </button>
         </div>
       </div>
 
@@ -224,7 +228,7 @@ export default function MessageList({ messages, currentEmail }) {
         "md:col-span-2 flex flex-col h-full bg-slate-950 relative",
         !selectedMessage ? "hidden md:flex" : "flex"
       )}>
-        {selectedMessage ? (
+        {showChat ? (
           <>
             <div className="p-3 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
@@ -234,19 +238,20 @@ export default function MessageList({ messages, currentEmail }) {
                 >
                   <ArrowLeft className="w-6 h-6" />
                 </button>
-                <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 font-bold text-base shrink-0 border border-blue-500/20">
-                  {selectedMessage.sender?.charAt(0).toUpperCase()}
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-sky-500 flex items-center justify-center text-white font-bold text-base shrink-0 shadow-lg">
+                  💬
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-slate-100 text-sm truncate">{selectedMessage.sender}</p>
-                  <p className="text-[10px] text-sky-400 font-medium truncate">Asunto: {selectedMessage.subject}</p>
+                  <p className="font-semibold text-slate-100 text-sm truncate">
+                    {uniqueSenders.length > 0 ? uniqueSenders.map(([name]) => name).join(', ') : 'Chat'}
+                  </p>
+                  <p className="text-[10px] text-sky-400 font-medium truncate">{currentEmail?.email}</p>
                 </div>
               </div>
-              {/* Removed MoreVertical dot icon completely per user request */}
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-950 to-slate-900 relative">
-              {threadMessages.map((msg) => {
+              {filteredMessages.map((msg) => {
                 const isOutgoing = msg.subject?.startsWith('Re: ') || msg.sender === 'Yo' || msg.sender === senderName;
                 const parsed = parseMessage(msg.message || '');
                 return (

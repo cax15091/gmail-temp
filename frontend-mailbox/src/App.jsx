@@ -106,6 +106,13 @@ function App() {
     }
   };
 
+  const resetEmail = () => {
+    setCurrentEmail(null);
+    setMessages([]);
+    setNewMsgCount(0);
+    localStorage.removeItem('tempmail_email');
+  };
+
   // ─── Fetch messages (auto-refresh) ─────────────────────────────────────────
   const fetchMessages = useCallback(async () => {
     const saved = localStorage.getItem('tempmail_email');
@@ -161,6 +168,7 @@ function App() {
           <EmailGenerator
             currentEmail={currentEmail}
             onGenerate={generateEmail}
+            onReset={resetEmail}
             loading={loading}
           />
 
@@ -168,7 +176,7 @@ function App() {
             <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
               <div className="flex items-center space-x-2 text-slate-400">
                 <Clock className="w-4 h-4 text-cyan-400" />
-                <span className="text-xs md:text-sm">Expiración y refresco en:</span>
+                <span className="text-xs md:text-sm">Auto-refresco en:</span>
               </div>
               <Countdown
                 key={refreshKey}
