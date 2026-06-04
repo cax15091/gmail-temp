@@ -103,6 +103,15 @@ export default function SenderForm({ activeEmail, messages, setMessages }) {
     }
   }, [messages, setupComplete]);
 
+  // Reset setup when activeEmail changes
+  useEffect(() => {
+    if (activeEmail) {
+      setSetupComplete(false);
+      // Optional: Clear subject when email changes to force a new subject
+      setSubject('');
+    }
+  }, [activeEmail]);
+
   const handleSetupSubmit = (e) => {
     e.preventDefault();
     if (senderName.trim() && subject.trim()) {
