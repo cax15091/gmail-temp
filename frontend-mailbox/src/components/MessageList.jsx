@@ -107,11 +107,7 @@ export default function MessageList({ messages, currentEmail }) {
     if (!replyText.trim() || !currentEmail || !selectedMessage) return;
     setLoadingReply(true);
 
-    const quotedBody =
-      replyText +
-      `\n\n— El ${new Date(selectedMessage.createdAt).toLocaleString('es-MX')}, ${selectedMessage.sender} escribió:\n` +
-      selectedMessage.message.split('\n\n---ATTACHMENTS_JSON---\n')[0]
-        .split('\n').map(l => `> ${l}`).join('\n');
+    const quotedBody = replyText;
 
     try {
       await axios.post(`${API_URL}/messages`, {
