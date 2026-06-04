@@ -6,8 +6,8 @@ import EmailGenerator from './components/EmailGenerator';
 import Countdown from './components/Countdown';
 import MessageList from './components/MessageList';
 
-const API_URL = 'http://localhost:5000/api';
-const SOCKET_URL = 'http://localhost:5000';
+const API_URL = 'https://wise-jars-shine.loca.lt/api';
+const SOCKET_URL = 'https://wise-jars-shine.loca.lt';
 
 function App() {
   const [socket, setSocket] = useState(null);

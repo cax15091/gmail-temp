@@ -4,8 +4,8 @@ import axios from 'axios';
 import { SendHorizontal } from 'lucide-react';
 import SenderForm from './components/SenderForm';
 
-const API_URL = 'http://localhost:5000/api';
-const SOCKET_URL = 'http://localhost:5000';
+const API_URL = 'https://wise-jars-shine.loca.lt/api';
+const SOCKET_URL = 'https://wise-jars-shine.loca.lt';
 
 function App() {
   const [socket, setSocket] = useState(null);

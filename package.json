@@ -1,0 +1,9 @@
+{
+  "name": "gmail-temp-root",
+  "version": "1.0.0",
+  "description": "Root package.json for Railway deployment",
+  "scripts": {
+    "install": "cd backend && npm install",
+    "start": "cd backend && node server.js"
+  }
+}

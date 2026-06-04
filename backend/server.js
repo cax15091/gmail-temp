@@ -9,15 +9,41 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-// Use a more permissive CORS for development
-app.use(cors());
+// CORS configuration - allow Vercel domains and any origin for development
+const allowedOrigins = [
+  'https://frontend-mailbox.vercel.app',
+  'https://frontend-sender.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:3001',
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      // Also allow any vercel.app subdomain
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
+
 app.use(express.json());
 
 const io = new Server(server, {
   cors: {
-    origin: "*", // allow all origins
-    methods: ["GET", "POST"]
-  }
+    origin: '*',
+    methods: ['GET', 'POST']
+  },
+  transports: ['websocket', 'polling']
+});
+
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'TempMail Pro Backend is running!' });
 });
 
 // Make io available in routes
@@ -31,7 +57,6 @@ app.use('/api', apiRoutes);
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 
-  // Clients can join a room based on the email ID
   socket.on('join_email', (emailId) => {
     socket.join(emailId);
     console.log(`User ${socket.id} joined room ${emailId}`);
@@ -42,7 +67,8 @@ io.on('connection', (socket) => {
   });
 });
 
+// Railway provides PORT dynamically via environment variable
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Backend server running on port ${PORT} (Using In-Memory Storage)`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`TempMail Pro Backend running on port ${PORT}`);
 });
